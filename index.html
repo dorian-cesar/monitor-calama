@@ -16,11 +16,30 @@
         }
         .status-indicator {
             font-weight: bold;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .volver-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .volver-btn:hover {
+            background-color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container mt-5 position-relative">
+        <!-- Botón Volver -->
+        <a href="https://andenes.terminal-calama.com/parkingCalama/#" class="volver-btn">Volver</a>
+
         <h2 class="text-center">Dashboard de Monitoreo</h2>
         <div class="row mt-4">
             <div class="col-md-6">
@@ -77,23 +96,33 @@
             </div>
         </div>
     </div>
-    
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function actualizarEstados() {
-                const estados = ["Operativo", "Falla", "Mantenimiento"];
-                document.getElementById("hw-inbio-banos").textContent = estados[Math.floor(Math.random() * estados.length)];
-                document.getElementById("hw-inbio-andenes").textContent = estados[Math.floor(Math.random() * estados.length)];
-                document.getElementById("hw-inbio-parking").textContent = estados[Math.floor(Math.random() * estados.length)];
-                document.getElementById("sw-parking").textContent = estados[Math.floor(Math.random() * estados.length)];
-                document.getElementById("sw-andenes").textContent = estados[Math.floor(Math.random() * estados.length)];
-                document.getElementById("sw-banos").textContent = estados[Math.floor(Math.random() * estados.length)];
-                document.getElementById("sw-custodia").textContent = estados[Math.floor(Math.random() * estados.length)];
+        const servicios = {
+            "hw-inbio-banos": "https://tudominio1.com",
+            "hw-inbio-andenes": "https://tudominio2.com",
+            "hw-inbio-parking": "https://tudominio3.com",
+            "sw-parking": "https://andenes.terminal-calama.com/parkingCalama/#",
+            "sw-andenes": "https://andenes.terminal-calama.com/parkingCalama/#",
+            "sw-banos": "https://andenes.terminal-calama.com/TerminalCalama/",
+            "sw-custodia": "https://andenes.terminal-calama.com/TerminalCalama/custodia.html"
+        };
+
+        function actualizarEstados() {
+            for (let id in servicios) {
+                fetch(servicios[id], { method: "HEAD", mode: "no-cors" })
+                    .then(() => actualizarUI(id, "Activo"))
+                    .catch(() => actualizarUI(id, "Inactivo"));
             }
-            
-            actualizarEstados();
-            setInterval(actualizarEstados, 5000);
-        });
+        }
+
+        function actualizarUI(id, estado) {
+            let elemento = document.getElementById(id);
+            elemento.textContent = estado;
+        }
+
+        setInterval(actualizarEstados, 5000);
+        actualizarEstados();
     </script>
 </body>
 </html>
