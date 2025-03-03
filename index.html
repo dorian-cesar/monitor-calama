@@ -31,16 +31,48 @@
             font-size: 18px;
         }
         .volver-btn:hover {
+            background-color: #555;
+        }
+        .update-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
             background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+        }
+        .update-btn:hover {
+            background-color: #1d1e1f;
+        }
+        .update-btn:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+        .loading-spinner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container mt-5 position-relative">
-        <!-- Botón Volver -->
         <a href="https://andenes.terminal-calama.com/parkingCalama/#" class="volver-btn">Volver</a>
-
         <h2 class="text-center">Dashboard de Monitoreo</h2>
+        <button class="update-btn" id="updateBtn" onclick="actualizarEstados()">
+            Actualizar Estado
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        </button>
         <div class="row mt-4">
             <div class="col-md-6">
                 <h4>Estado del Hardware</h4>
@@ -98,6 +130,8 @@
     </div>
 
     <script>
+        let updateInProgress = false;
+
         const servicios = {
             "hw-inbio-banos": "https://tudominio1.com",
             "hw-inbio-andenes": "https://tudominio2.com",
@@ -109,20 +143,34 @@
         };
 
         function actualizarEstados() {
+            if (updateInProgress) return; // Previene clics repetidos
+
+            updateInProgress = true;
+            document.getElementById("updateBtn").disabled = true;
+            document.getElementById("loadingSpinner").style.display = "block";
+
             for (let id in servicios) {
                 fetch(servicios[id], { method: "HEAD", mode: "no-cors" })
                     .then(() => actualizarUI(id, "Activo"))
                     .catch(() => actualizarUI(id, "Inactivo"));
             }
+
+            setTimeout(() => {
+                document.getElementById("updateBtn").disabled = false;
+                document.getElementById("loadingSpinner").style.display = "none";
+                updateInProgress = false;
+            }, 2000); // Tiempo de espera de 2 segundos antes de permitir otro clic
         }
 
         function actualizarUI(id, estado) {
             let elemento = document.getElementById(id);
-            elemento.textContent = estado;
+            if (elemento) {
+                elemento.textContent = estado;                
+            }
         }
 
-        setInterval(actualizarEstados, 5000);
         actualizarEstados();
+        setInterval(actualizarEstados, 60000);
     </script>
 </body>
 </html>
