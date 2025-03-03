@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Monitoreo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff;
+            color: rgb(73, 73, 73);
+        }
+        .card {
+            background-color: #6c757d;
+            color: white;
+        }
+        .status-indicator {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Dashboard de Monitoreo</h2>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h4>Estado del Hardware</h4>
+                <div id="hardware-status" class="row g-3">
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Inbio Baños</h5>
+                            <p class="status-indicator" id="hw-inbio-banos">Cargando...</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Inbio Andenes</h5>
+                            <p class="status-indicator" id="hw-inbio-andenes">Cargando...</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Inbio Parking</h5>
+                            <p class="status-indicator" id="hw-inbio-parking">Cargando...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4>Estado del Software</h4>
+                <div id="software-status" class="row g-3">
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Parking</h5>
+                            <p class="status-indicator" id="sw-parking">Cargando...</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Andenes</h5>
+                            <p class="status-indicator" id="sw-andenes">Cargando...</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Baños</h5>
+                            <p class="status-indicator" id="sw-banos">Cargando...</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-3">
+                            <h5>Custodia</h5>
+                            <p class="status-indicator" id="sw-custodia">Cargando...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function actualizarEstados() {
+                const estados = ["Operativo", "Falla", "Mantenimiento"];
+                document.getElementById("hw-inbio-banos").textContent = estados[Math.floor(Math.random() * estados.length)];
+                document.getElementById("hw-inbio-andenes").textContent = estados[Math.floor(Math.random() * estados.length)];
+                document.getElementById("hw-inbio-parking").textContent = estados[Math.floor(Math.random() * estados.length)];
+                document.getElementById("sw-parking").textContent = estados[Math.floor(Math.random() * estados.length)];
+                document.getElementById("sw-andenes").textContent = estados[Math.floor(Math.random() * estados.length)];
+                document.getElementById("sw-banos").textContent = estados[Math.floor(Math.random() * estados.length)];
+                document.getElementById("sw-custodia").textContent = estados[Math.floor(Math.random() * estados.length)];
+            }
+            
+            actualizarEstados();
+            setInterval(actualizarEstados, 5000);
+        });
+    </script>
+</body>
+</html>
