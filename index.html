@@ -131,46 +131,74 @@
 
     <script>
         let updateInProgress = false;
-
+    
         const servicios = {
-            "hw-inbio-banos": "https://tudominio1.com",
-            "hw-inbio-andenes": "https://tudominio2.com",
-            "hw-inbio-parking": "https://tudominio3.com",
+            "hw-inbio-banos": "https://zkteco.terminal-calama.com/zteco-backend/leerDispositivos.php",
+            "hw-inbio-andenes": "https://zkteco.terminal-calama.com/zteco-backend/leerDispositivos.php",
+            "hw-inbio-parking": "https://zkteco.terminal-calama.com/zteco-backend/leerDispositivos.php",
             "sw-parking": "https://andenes.terminal-calama.com/parkingCalama/#",
             "sw-andenes": "https://andenes.terminal-calama.com/parkingCalama/#",
             "sw-banos": "https://andenes.terminal-calama.com/TerminalCalama/",
             "sw-custodia": "https://andenes.terminal-calama.com/TerminalCalama/custodia.html"
         };
-
+    
+        const dispositivos = {
+            "hw-inbio-banos": "Baños",
+            "hw-inbio-andenes": "AndenesCalama",
+            "hw-inbio-parking": "ParkingCalama"
+        };
+    
         function actualizarEstados() {
-            if (updateInProgress) return; // Previene clics repetidos
-
+            if (updateInProgress) return;
+    
             updateInProgress = true;
             document.getElementById("updateBtn").disabled = true;
             document.getElementById("loadingSpinner").style.display = "block";
-
+    
             for (let id in servicios) {
-                fetch(servicios[id], { method: "HEAD", mode: "no-cors" })
-                    .then(() => actualizarUI(id, "Activo"))
-                    .catch(() => actualizarUI(id, "Inactivo"));
+                if (dispositivos[id]) {
+                    // Consultar API para los dispositivos Inbio (Baños, Andenes, Parking)
+                    fetch(servicios[id])
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Array.isArray(data.data)) {
+                                const dispositivo = data.data.find(item => item.name === dispositivos[id]); 
+                                if (dispositivo) {
+                                    const estado = dispositivo.status === "1" ? "Activo" : "Inactivo";
+                                    actualizarUI(id, estado);
+                                } else {
+                                    actualizarUI(id, "Desconocido");
+                                }
+                            } else {
+                                actualizarUI(id, "Error de datos");
+                            }
+                        })
+                        .catch(() => actualizarUI(id, "Inactivo"));
+                } else {
+                    // Para los otros servicios, verificar si responden
+                    fetch(servicios[id], { method: "HEAD", mode: "no-cors" })
+                        .then(() => actualizarUI(id, "Activo"))
+                        .catch(() => actualizarUI(id, "Inactivo"));
+                }
             }
-
+    
             setTimeout(() => {
                 document.getElementById("updateBtn").disabled = false;
                 document.getElementById("loadingSpinner").style.display = "none";
                 updateInProgress = false;
-            }, 2000); // Tiempo de espera de 2 segundos antes de permitir otro clic
+            }, 2000);
         }
-
+    
         function actualizarUI(id, estado) {
             let elemento = document.getElementById(id);
             if (elemento) {
-                elemento.textContent = estado;                
+                elemento.textContent = estado;
             }
         }
-
+    
         actualizarEstados();
         setInterval(actualizarEstados, 60000);
     </script>
+    
 </body>
 </html>
